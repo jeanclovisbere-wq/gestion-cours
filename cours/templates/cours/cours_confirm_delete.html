@@ -1,0 +1,12 @@
+{% extends 'cours/base.html' %}
+{% block content %}
+<div class="delete-container">
+    <h2>⚠️ Confirmer la suppression</h2>
+    <p>Voulez-vous vraiment supprimer le cours <strong>{{ object.titre }}</strong> ?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-delete">🗑️ Oui, supprimer</button>
+        <a href="{% url 'cours-list' %}" class="btn btn-add">❌ Annuler</a>
+    </form>
+</div>
+{% endblock %}
