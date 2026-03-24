@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Gestion des Cours</title>
+    <link rel="stylesheet" href="{% static 'cours/style.css' %}">
+</head>
+<body>
+    <div style="max-width:450px; margin:80px auto;">
+        <div class="container fade-in">
+            <div class="navbar" style="justify-content:center;">
+                <h1>🎓 Gestion des Cours</h1>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <h2 style="text-align:center; margin-bottom:10px;">🔒 Connexion</h2>
+                    <p style="text-align:center; color:#777; margin-bottom:25px;">
+                        Connectez-vous pour gérer les cours
+                    </p>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                        <div class="alert" style="background:#fde8e8; color:#c0392b; border-left:4px solid #e74c3c; margin-bottom:15px;">
+                            ❌ Nom d'utilisateur ou mot de passe incorrect.
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <label>👤 Nom d'utilisateur</label>
+                            <input type="text" name="username" placeholder="Entrez votre nom d'utilisateur" required autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label>🔑 Mot de passe</label>
+                            <input type="password" name="password" placeholder="Entrez votre mot de passe" required>
+                        </div>
+                        <button type="submit" class="btn btn-add" style="width:100%; padding:15px; font-size:16px; margin-top:10px;">
+                            Se connecter →
+                        </button>
+                    </form>
+                    <p style="text-align:center; margin-top:20px; color:#777;">
+                        <a href="/" style="color:#3498db;">← Retour à l'accueil</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -2,9 +2,15 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, T
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.http import HttpResponse
 from .models import Cours
 from .forms import CoursForm
 from dateutil.relativedelta import relativedelta
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.units import cm
 
 class AccueilView(TemplateView):
     template_name = 'cours/accueil.html'
@@ -83,3 +89,100 @@ class CoursDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'cours/cours_confirm_delete.html'
     success_url = reverse_lazy('cours-list')
     login_url = '/login/'
+    from django.http import HttpResponse
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.units import cm
+
+def imprimer_cours_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="liste_cours.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=A4,
+                            rightMargin=2*cm, leftMargin=2*cm,
+                            topMargin=2*cm, bottomMargin=2*cm)
+
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # Titre
+    titre_style = ParagraphStyle(
+        'titre',
+        parent=styles['Title'],
+        fontSize=20,
+        textColor=colors.HexColor('#2c3e50'),
+        spaceAfter=10
+    )
+    elements.append(Paragraph("🎓 Liste des Cours", titre_style))
+
+    # Sous-titre avec date
+    from django.utils import timezone
+    date_str = timezone.now().strftime("%d/%m/%Y à %H:%M")
+    sous_titre_style = ParagraphStyle(
+        'sous_titre',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=colors.grey,
+        spaceAfter=20
+    )
+    elements.append(Paragraph(f"Imprimé le {date_str}", sous_titre_style))
+    elements.append(Spacer(1, 0.5*cm))
+
+    # Données du tableau
+    cours_list = Cours.objects.all().order_by('-date_publication')
+
+    data = [['N°', 'Titre du cours', 'Enseignant', 'Date de publication']]
+
+    for i, cours in enumerate(cours_list, 1):
+        data.append([
+            str(i),
+            cours.titre,
+            cours.enseignant,
+            cours.date_publication.strftime("%d/%m/%Y")
+        ])
+
+    # Style du tableau
+    table = Table(data, colWidths=[1.5*cm, 7*cm, 6*cm, 4*cm])
+    table.setStyle(TableStyle([
+        # En-tête
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('TOPPADDING', (0, 0), (-1, 0), 12),
+        # Lignes
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f4ff')]),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('ALIGN', (0, 1), (0, -1), 'CENTER'),
+        ('ALIGN', (3, 1), (3, -1), 'CENTER'),
+        ('TOPPADDING', (0, 1), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
+        # Bordures
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#2c3e50')),
+    ]))
+
+    elements.append(table)
+
+    # Pied de page
+    elements.append(Spacer(1, 1*cm))
+    footer_style = ParagraphStyle(
+        'footer',
+        parent=styles['Normal'],
+        fontSize=9,
+        textColor=colors.grey,
+        alignment=1
+    )
+    elements.append(Paragraph(
+        f"Total : {cours_list.count()} cours | GestionCours © {timezone.now().year}",
+        footer_style
+    ))
+
+    doc.build(elements)
+    return response
