@@ -1,0 +1,83 @@
+{% extends 'cours/base.html' %}
+{% block content %}
+
+<!-- HERO SECTION -->
+<div style="text-align:center; padding:50px 20px; background:linear-gradient(135deg, #667eea, #764ba2); border-radius:15px; margin-bottom:30px; color:white;">
+    <div style="font-size:80px; margin-bottom:20px;">🎓</div>
+    <h1 style="font-size:36px; font-weight:bold; margin-bottom:15px;">
+        Bienvenue sur le site de Gestion de vos Cours
+    </h1>
+    <p style="font-size:18px; opacity:0.9; max-width:600px; margin:0 auto 30px;">
+        Une plateforme moderne pour gérer facilement vos cours, 
+        vos enseignants et vos publications en toute simplicité.
+    </p>
+    <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+        <a href="{% url 'dashboard' %}" class="btn btn-add" style="padding:15px 30px; font-size:16px;">
+            📊 Accéder au tableau de bord
+        </a>
+        <a href="{% url 'cours-list' %}" class="btn" style="padding:15px 30px; font-size:16px; background:rgba(255,255,255,0.2); color:white;">
+            📋 Voir les cours
+        </a>
+    </div>
+</div>
+
+<!-- STATISTIQUES RAPIDES -->
+<div class="stats" style="margin-bottom:30px;">
+    <div class="stat-card" style="background:linear-gradient(135deg, #667eea, #764ba2);">
+        <h3>{{ total_cours }}</h3>
+        <p>📚 Total des cours</p>
+    </div>
+    <div class="stat-card" style="background:linear-gradient(135deg, #f093fb, #f5576c);">
+        <h3>{{ total_enseignants }}</h3>
+        <p>👨‍🏫 Enseignants</p>
+    </div>
+    <div class="stat-card" style="background:linear-gradient(135deg, #4facfe, #00f2fe);">
+        <h3>{% if dernier_cours %}{{ dernier_cours.date_publication|date:"d/m/Y" }}{% else %}--{% endif %}</h3>
+        <p>🕐 Dernière publication</p>
+    </div>
+</div>
+
+<!-- FONCTIONNALITÉS -->
+<h3 style="color:#2c3e50; margin-bottom:20px;">✨ Fonctionnalités disponibles</h3>
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:30px;">
+
+    <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); text-align:center; transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:40px; margin-bottom:10px;">📚</div>
+        <h4 style="color:#2c3e50; margin-bottom:8px;">Gestion des cours</h4>
+        <p style="color:#777; font-size:14px;">Créez, modifiez et supprimez vos cours facilement.</p>
+    </div>
+
+    <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); text-align:center; transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:40px; margin-bottom:10px;">🔍</div>
+        <h4 style="color:#2c3e50; margin-bottom:8px;">Recherche rapide</h4>
+        <p style="color:#777; font-size:14px;">Recherchez un cours ou un enseignant en un instant.</p>
+    </div>
+
+    <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); text-align:center; transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:40px; margin-bottom:10px;">📊</div>
+        <h4 style="color:#2c3e50; margin-bottom:8px;">Tableau de bord</h4>
+        <p style="color:#777; font-size:14px;">Visualisez les statistiques et graphiques de vos cours.</p>
+    </div>
+
+    <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); text-align:center; transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:40px; margin-bottom:10px;">🔒</div>
+        <h4 style="color:#2c3e50; margin-bottom:8px;">Espace sécurisé</h4>
+        <p style="color:#777; font-size:14px;">Accès protégé par authentification via l'admin Django.</p>
+    </div>
+
+</div>
+
+<!-- DERNIER COURS -->
+{% if dernier_cours %}
+<div style="background:#f0f4ff; border-left:4px solid #3498db; padding:20px; border-radius:8px;">
+    <h4 style="color:#2c3e50; margin-bottom:10px;">🆕 Dernier cours publié</h4>
+    <p><strong>Titre :</strong> {{ dernier_cours.titre }}</p>
+    <p><strong>Enseignant :</strong> {{ dernier_cours.enseignant }}</p>
+    <p><strong>Date :</strong> {{ dernier_cours.date_publication|date:"d F Y" }}</p>
+    <a href="{% url 'cours-list' %}" class="btn btn-add" style="margin-top:10px; display:inline-block;">
+        Voir tous les cours →
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

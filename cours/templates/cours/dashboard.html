@@ -1,0 +1,106 @@
+{% extends 'cours/base.html' %}
+{% block content %}
+
+<h2 style="color:#2c3e50; margin-bottom:25px;">📊 Tableau de bord</h2>
+
+<!-- CARTES STATISTIQUES -->
+<div class="stats">
+    <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+        <h3>{{ total_cours }}</h3>
+        <p>📚 Total des cours</p>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+        <h3>{{ total_enseignants }}</h3>
+        <p>👨‍🏫 Total des enseignants</p>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+        <h3>{{ cours_recents|length }}</h3>
+        <p>🕐 Cours ce mois-ci</p>
+    </div>
+</div>
+
+<!-- DERNIER COURS AJOUTÉ -->
+{% if dernier_cours %}
+<div style="background:#f0f4ff; border-left:4px solid #3498db; padding:15px; border-radius:8px; margin-bottom:25px;">
+    <h4 style="color:#2c3e50; margin-bottom:8px;">🆕 Dernier cours ajouté</h4>
+    <p><strong>Titre :</strong> {{ dernier_cours.titre }}</p>
+    <p><strong>Enseignant :</strong> {{ dernier_cours.enseignant }}</p>
+   <p><strong>Date :</strong> {{ dernier_cours.date_publication|date:"d F Y" }}</p>
+</div>
+{% endif %}
+
+<!-- GRAPHIQUE COURS PAR MOIS -->
+<div style="background:white; padding:25px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom:25px;">
+    <h4 style="color:#2c3e50; margin-bottom:15px;">📈 Cours publiés par mois</h4>
+    <canvas id="coursChart" height="100"></canvas>
+</div>
+
+<!-- COURS RÉCENTS -->
+<div style="background:white; padding:25px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h4 style="color:#2c3e50;">🕐 Cours récents</h4>
+        <a href="{% url 'cours-list' %}" class="btn btn-add">Voir tous</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>📖 Titre</th>
+                <th>👨‍🏫 Enseignant</th>
+                <th>📅 Date</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cours in cours_recents %}
+            <tr>
+                <td>{{ cours.titre }}</td>
+                <td>{{ cours.enseignant }}</td>
+                <td>{{ cours.date_publication }}</td>
+                <td>
+                    <a href="{% url 'cours-update' cours.pk %}" class="btn btn-edit">✏️</a>
+                    <a href="{% url 'cours-delete' cours.pk %}" class="btn btn-delete">🗑️</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align:center; padding:20px; color:#999;">
+                    Aucun cours disponible.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- SCRIPT GRAPHIQUE -->
+<script>
+    const ctx = document.getElementById('coursChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ mois_labels|safe }},
+            datasets: [{
+                label: 'Nombre de cours',
+                data: {{ cours_par_mois|safe }},
+                backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

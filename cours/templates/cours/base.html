@@ -6,13 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Cours</title>
     <link rel="stylesheet" href="{% static 'cours/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container fade-in">
         <div class="navbar">
-            <h1>🎓 Gestion des Cours</h1>
-            <a href="{% url 'cours-list' %}">📋 Liste des cours</a>
-        </div>
+    <h1>🎓 Gestion des Cours</h1>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a href="{% url 'accueil' %}">🏠 Accueil</a>
+        <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+        <a href="{% url 'cours-list' %}">📋 Cours</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'cours-create' %}">➕ Ajouter</a>
+            <span style="color:rgba(255,255,255,0.7);">👤 {{ user.username }}</span>
+            <a href="{% url 'logout' %}" style="background:rgba(231,76,60,0.7);">🚪 Déconnexion</a>
+        {% else %}
+            <a href="{% url 'login' %}" style="background:rgba(46,204,113,0.7);">🔒 Connexion</a>
+        {% endif %}
+    </div>
+</div>
         <div class="content">
             {% if messages %}
                 {% for message in messages %}
