@@ -9,10 +9,8 @@ def valider_date(value):
 class Cours(models.Model):
     titre = models.CharField(max_length=200)
     enseignant = models.CharField(max_length=100)
-    date_publication = models.DateField()
-
-    def clean(self):
-        valider_date(self.date_publication)
+    date_publication = models.DateField(validators=[valider_date])
+    date_ajout = models.DateTimeField(auto_now_add=True)  # ← caché, automatique
 
     def __str__(self):
         return self.titre
